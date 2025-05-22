@@ -1,7 +1,24 @@
+import { useState } from "react";
+import Header from "../components/Header";
+import Navbar from "../components/Navbar";
+import WorkspaceKanban from "../components/WorkspaceKanban";
+import WorkspaceToDo from "../components/WorkspaceToDo";
+
 export default function Dashboard() {
-    return(
+    const [activeTab, setActiveTab] = useState("kanban");
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+    };
+
+    return (
         <div>
-            <h1>Dashboard</h1>
+            <Header />
+            <Navbar onTabChange={handleTabChange} activeTab={activeTab} />
+            <div className="p-4">
+                {activeTab === "kanban" && <WorkspaceKanban />}
+                {activeTab === "toDo" && <WorkspaceToDo />}
+            </div>
         </div>
-    )
+    );
 }

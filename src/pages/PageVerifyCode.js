@@ -1,6 +1,7 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { IoIosArrowForward } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import api from "../services/axios";
 
 export default function PageVerifyCode() {
     const inputsRef = useRef([]);
@@ -18,16 +19,36 @@ export default function PageVerifyCode() {
         }
     }
 
-    const handleNavigate = () => {
+    const location = useLocation();
+    const email = location.state?.email;
+
+    const handleNavigate = async () => {
         const allFilled = inputsRef.current.every(input => input && input.value !== "");
 
-        if (!allFilled) {
-            alert('Preencha o código fornecido.');
+        if (!email) {
+            alert("Email não encontrado. Volte e insira seu email novamente.");
             return;
         }
 
-        navigate('/dashboard');
-    }
+        if (allFilled) {
+            const codeValue = inputsRef.current.map(input => input.value).join("");
+
+            try {
+                const response = await api.post("/auth/verify-code", {
+                    email: email.trim(),
+                    code: codeValue,
+                });
+
+                alert("Login realizado com sucesso!");
+                navigate('/dashboard');
+            } catch (error) {
+                console.error(error);
+                alert("Código inválido ou expirado. Tente novamente.");
+            }
+        } else {
+            alert("Preencha todos os campos!");
+        }
+    };
 
     return (
         <div>
@@ -61,7 +82,7 @@ export default function PageVerifyCode() {
                     <IoIosArrowForward />
                 </div>
             </section>
-            <div className="mt-20 md:hidden">
+            <div className="mt-60 md:hidden">
                 <img src="/assets/group.png" alt="decor" />
             </div>
         </div>

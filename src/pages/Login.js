@@ -2,21 +2,28 @@ import { useState } from "react";
 import { MdOutlineEmail } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../services/axios";
 
 export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
 
-    const handleNavigate = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-        if (!emailRegex.test(email.trim())) {
-            alert("Por favor, insira um e-mail válido.");
-            return;
-        }
-    
-        navigate('/auth/verify-code');
-    };
+    const handleNavigate = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email.trim())) {
+        alert("Por favor, insira um e-mail válido.");
+        return;
+    }
+
+    try {
+        await api.post("api/auth/request-code", { email: email.trim() });
+        navigate("/auth/verify-code", { state: { email: email.trim() } });
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao solicitar código. Tente novamente.");
+    }
+};
 
     return (
         <div>
@@ -55,7 +62,7 @@ export default function Login() {
                 </p>
             </section>
 
-            <div className="mt-20 md:hidden">
+            <div className="mt-40 md:hidden">
                 <img src="./assets/group.png" alt="decor" />
             </div>
         </div>

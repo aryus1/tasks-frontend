@@ -3,6 +3,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PageVerifyCode from "./pages/PageVerifyCode";
+import WorkspaceToDo from "./components/WorkspaceToDo";
+import InternWorkspaceKanban from "./pages/InternWorkspaceKanban";
 
 export default function Rotas() {
     return (
@@ -13,6 +15,8 @@ export default function Rotas() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/auth/verify-code" element={<PageVerifyCode />} />
+                    <Route path="/workspace-to-do" element={<WorkspaceToDo />} />
+                    <Route path="/dashboard/workspace/:title" element={<InternWorkspaceKanban />} />
                 </Routes>
             </BrowserRouter>
         </div>
