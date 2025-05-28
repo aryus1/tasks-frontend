@@ -1,60 +1,74 @@
 import { useState } from "react";
-import { Icons } from "src/components/Icons";
 import { Link, useNavigate } from "react-router-dom";
+import InputField from "../components/InputField";
+import { Icons } from "../components/Icons";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const isValidEmail = emailRegex.test(email.trim());
 
-    const handleNavigate = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-        if (!emailRegex.test(email.trim())) {
-            alert("Por favor, insira um e-mail válido.");
-            return;
-        }
-    
-        navigate('/auth/verify-code');
-    };
+  const handleNavigate = () => {
+    if (!isValidEmail) {
+      alert("Por favor, insira um e-mail válido.");
+      return;
+    }
 
-    return (
-        <main className="flex justify-center items-center min-h-screen">
-        <div> 
-            <div className="flex justify-center">
-                <img src="./assets/logo.png" alt="Logo Dasky" />
-            </div>
+    navigate("/auth/verify-code");
+  };
 
-            <section className="flex flex-col justify-center items-center">
-                <h1 className="font-bold text-2xl text-[#203309] text-center">
-                    Digite seu e-mail <span className="block">para entrar</span>
-                </h1>
-
-                <div className="relative max-w-sm flex items-center">
-                    <Icons.Mail className="h-6 w-6 text-gray-500" />
-                    <input
-                        type="email"
-                        className="w-full pl-12 pr-4 py-2 border-2 border-[#C1CBB5] rounded-xl"
-                        placeholder="seuemail@gmail.com"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div
-                    className="flex items-center w-fit px-16 py-2 bg-[#A0FF2C] border-b-2 border-b-black rounded-xl cursor-pointer "
-                    onClick={handleNavigate}
-                >
-                    <button className="text-[#203309] font-bold">Enviar código</button>
-                    <Icons.Mail className="h-6 w-6 text-gray-500" />
-                </div>
-
-                <p className="text-[#3D5536]">
-                    Não tem uma conta? <strong><Link to={'/register'}>Crie agora!</Link></strong>
-                </p>
-            </section>
+  return (
+    <main className="flex justify-center items-center min-h-screen bg-stone-950">
+      <div className="space-y-8 min-w-80 ">
+        <div className="flex justify-center">
+          <img src="./assets/logo-white.svg" alt="Logo Dasky" className="w-36" />
         </div>
-        </main>
-    );
+
+        <section>
+          <h1 className="font-extrabold text-2xl text-center mb-6
+          text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-lime-400 to-lime-100">
+            Digite seu e-mail 
+            <span className="block text-2xl font-semibold 
+            text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-lime-400 to-lime-100">
+            para entrar
+            </span>
+          </h1>
+
+          <form
+            className="space-y-3 max-w-sm"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNavigate();
+            }}
+          >
+            <InputField
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              isValid={email.length === 0 || isValidEmail}
+            />
+            <button
+              type="button"
+              onClick={handleNavigate}
+              className="
+              whitespace-nowrap
+              flex justify-center gap-2 pl-2 items-center w-full h-12 
+              text-base text-stone-950 font-bold text-center rounded-lg
+              bg-gradient-to-r from-lime-700 via-lime-500 to-lime-300
+              hover:translate-y-[-5px] transition-all duration-400
+              "
+            >
+              Enviar Código
+              <Icons.Right className="h-5 w-5 bg-transparent" />
+            </button>
+          </form>
+
+          <p className="text-sm text-center text-stone-700 mt-2">
+            Não tem uma conta? <strong><Link to="/register" className="hover:underline hover:text-lime-700">Criar agora!</Link></strong>
+          </p>
+        </section>
+      </div>
+    </main>
+  );
 }

@@ -1,10 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
 
 * {
-  @apply bg-amber-50;
+  @apply font-sora;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: #57534e !important; /* text-stone-800 ou a cor que você preferir */
+  font-size: 0.875rem !important; /* text-sm */
+  color: #4b5563 !important; /* text-stone-500 */
+  transition: background-color 9999s ease-in-out 0s;
 }
