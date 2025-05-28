@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import { Icons } from "../components/Icons";
+import api from "../services/axios";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -10,13 +11,25 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const isValidEmail = emailRegex.test(email.trim());
 
-  const handleNavigate = () => {
-    if (!isValidEmail) {
-      alert("Por favor, insira um e-mail válido.");
-      return;
-    }
+  const handleNavigate = async () => {
+    try {
+      if (!isValidEmail) {
+        alert("Por favor, insira um e-mail válido.");
+        return;
+      }
 
-    navigate("/auth/verify-code");
+      const response = await api.post("api/auth/request-code", {
+        email: email,
+      });
+
+      localStorage.setItem("email", email);
+
+      navigate("/auth/verify-code");
+
+    } catch (error) {
+      console.error("Erro ao requisitar o código de verificação.", error)
+      alert("Houve um erro a solicitar o código. Tente novamente!")
+    }
   };
 
   return (
@@ -29,10 +42,10 @@ export default function Login() {
         <section>
           <h1 className="font-extrabold text-2xl text-center mb-6
           text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-lime-400 to-lime-100">
-            Digite seu e-mail 
+            Digite seu e-mail
             <span className="block text-2xl font-semibold 
             text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-lime-400 to-lime-100">
-            para entrar
+              para entrar
             </span>
           </h1>
 

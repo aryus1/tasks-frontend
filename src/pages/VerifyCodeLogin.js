@@ -2,23 +2,71 @@ import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icons } from "../components/Icons";
 import CodeInput from "../components/CodeInput";
+import api from "../services/axios";
 
 export default function VerifyCodeLogin() {
   const navigate = useNavigate();
   const [isCodeValid, setIsCodeValid] = useState(null);
-  const codeRef = useRef("");
+  const [code, setCode] = useState("")
 
-  const handleCompleteCode = (code) => {
-    codeRef.current = code;
-    setIsCodeValid(code === "1234");
-  };
-
-  const handleSubmit = () => {
-    if (!isCodeValid) {
-      alert("Código incorreto.");
+  const handleResetCode = async () => {
+    const email = localStorage.getItem("email");
+    if (!email) {
+      alert("E-mail não encontrado. Por favor, volte e informe seu e-mail novamente.");
       return;
     }
-    navigate("/dashboard");
+
+    try {
+      const response = await api.post("api/auth/request-code", { email });
+
+      alert("Código reenviado com sucesso! Verifique seu e-mail.");
+    } catch (error) {
+      console.error("Erro ao reenviar o código.", error);
+      alert("Erro ao reenviar o código de verificação. Tente novamente mais tarde.");
+    }
+  };
+
+  const handleCompleteCode = (completedCode) => {
+    setCode(completedCode);
+    setIsCodeValid(null);
+  };
+
+  const handleSubmit = async () => {
+    const email = localStorage.getItem("email");
+
+    if (!email) {
+      alert("E-mail não encontrado. Retorne e insira novamente.");
+      return;
+    }
+
+    if (code.length !== 6) {
+      alert("Por favor, insira o código completo.");
+      return;
+    }
+
+    try {
+      console.log("Enviando dados para verificação:", {
+        email,
+        code,
+      });
+
+      const response = await api.post("api/auth/verify-code", {
+        email: email,
+        code: code,
+      });
+
+      if (response.data.token) {
+        setIsCodeValid(true);
+        localStorage.removeItem("email");
+        navigate("/dashboard");
+      } else {
+        setIsCodeValid(false);
+        alert("Código incorreto.");
+      }
+    } catch (error) {
+      console.error("Erro ao verificar o código:", error);
+      setIsCodeValid(false);
+    }
   };
 
   return (
@@ -34,36 +82,48 @@ export default function VerifyCodeLogin() {
             Confirme o código
             <span className="block text-2xl font-semibold 
             text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-lime-400 to-lime-100">
-            para entrar.
+              para entrar.
             </span>
           </h1>
-          <div className="space-y-3 max-w-sm">
-            <CodeInput 
-              length={4} 
-              onComplete={handleCompleteCode} 
+          <div className="flex flex-col justify-center items-center space-y-3 max-w-sm">
+            <CodeInput
+              length={6}
+              onComplete={handleCompleteCode}
               isValid={isCodeValid !== false}
-              autoFocus 
+              autoFocus
             />
 
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!isCodeValid}
+              disabled={code.length !== 6}
               className={`
                 whitespace-nowrap
                 flex justify-center gap-2 pl-2 items-center w-full h-12 
                 text-base text-stone-950 font-bold text-center rounded-lg
                 bg-gradient-to-r from-lime-700 via-lime-500 to-lime-300
                 transition-all duration-300
-                ${isCodeValid ? 'hover:translate-y-[-5px]' : 'opacity-80 cursor-not-allowed'}
+                ${code.length === 6
+                  ? "hover:translate-y-[-5px]"
+                  : "opacity-80 cursor-not-allowed"
+                }
               `}
             >
               Verificar código
               <Icons.Right className="h-5 w-5 bg-transparent" />
             </button>
-          </div>  
+          </div>
           <p className="text-sm text-center text-stone-700 mt-2">
-            Não recebeu ainda? <strong><Link to="/auth/verify-code-register" className="hover:underline hover:text-lime-700">Reenviar código.</Link></strong>
+            Não recebeu ainda?
+            <strong>
+              <button
+                type="button"
+                onClick={handleResetCode}
+                className="hover:underline hover:text-lime-700"
+              >
+                Reenviar código.
+              </button>
+            </strong>
           </p>
         </section>
       </div>
