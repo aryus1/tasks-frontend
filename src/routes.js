@@ -20,7 +20,7 @@ export default function Rotas() {
           <Route path="/auth/verify-code-register" element={<VerifyCodeRegister />} />
           <Route path="/set-username" element={<SetUsername />} />
           <Route path="/workspace-to-do" element={<WorkspaceToDo />} />
-          <Route path="/kanban" element={<KanBan />} /> {/* Adicione esta rota */}
+          <Route path="/kanban" element={<KanBan />} />
         </Routes>
       </BrowserRouter>
     </div>

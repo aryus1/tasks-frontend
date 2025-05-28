@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import { Icons } from "../components/Icons";
+import api from "../services/axios";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -10,13 +11,25 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const isValidEmail = emailRegex.test(email.trim());
 
-    const handleNavigate = () => {
-        if (!isValidEmail) {
-            alert("Por favor, insira um e-mail válido.");
-            return;
-        }
+    const handleNavigate = async () => {
+        try {
+            if (!isValidEmail) {
+                alert("Por favor, insira um e-mail válido.");
+                return;
+            }
 
-        navigate("/auth/verify-code-register");
+            const response = await api.post("api/auth/request-code", {
+                email: email,
+            });
+            
+            localStorage.setItem("email", email);
+
+            navigate("/auth/verify-code-register");
+
+        } catch (error) {
+            console.error("Erro ao requisitar o código de verificação.", error)
+            alert("Houve um erro a solicitar o código. Tente novamente!")
+        }
     };
 
     return (
