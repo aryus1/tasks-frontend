@@ -1,63 +1,110 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CreateList from "./CreateList";
 import ToDoList from "./ToDoList";
 import Header from "./Header";
 import Lists from "./Lists";
 import { GoTrash } from "react-icons/go";
+import api from "../services/axios";
 
 export default function WorkspaceToDo() {
   const [lists, setLists] = useState([]);
   const [activeList, setActiveList] = useState(null);
 
-  const handleCreateList = (newList) => {
-    const listWithTasks = { ...newList, tasks: [] };
-    setLists([...lists, listWithTasks]);
-  };
+  const fetchLists = async () => {
+    try {
+      const response = await api.get('api/workspace-todo')
+      const fetchedLists = response.data.map((list) => ({
+        ...list,
+        tasks: list.tasks ?? [],
+      }));
+      setLists(fetchedLists)
+    } catch (error) {
+      console.error("Erro ao buscar as listas", error)
+    }
+  }
 
-  const handleAddTask = (listId, newTask) => {
-    setLists(
-      lists.map((list) => {
-        if (list.id === listId) {
-          return {
-            ...list,
-            tasks: [...list.tasks, newTask],
-          };
-        }
-        return list;
-      })
-    );
-  };
+  useEffect(() => {
+    fetchLists()
+  }, [])
 
-  const handleDeleteList = (listId) => {
-    setLists(lists.filter((list) => list.id !== listId));
-    if (activeList === listId) {
-      setActiveList(null);
+  const handleCreateList = async (newList) => {
+    try {
+      const response = await api.post("api/workspace-todo", newList)
+      const createdList = { ...response.data, tasks: [] }
+      setLists([...lists, createdList])
+    } catch (error) {
+      console.error("Erro ao criar a lista To-Do", error)
+      alert("Erro ao criar a lista. Tente novamente mais tarde!")
     }
   };
 
-  const handleDeleteTask = (listId, taskId) => {
-    setLists(
-      lists.map((list) => {
-        if (list.id === listId) {
-          return {
-            ...list,
-            tasks: list.tasks.filter((task) => task.id !== taskId),
-          };
-        }
-        return list;
-      })
-    );
+  const handleAddTask = async (listId, newTask) => {
+    try {
+      const response = await api.post('api/tasks-todo', {
+        ...newTask,
+        flow_id: listId
+      });
+      const savedTask = response.data;
+
+      setLists(
+        lists.map((list) =>
+          list.id === listId
+            ? { ...list, tasks: [...list.tasks, savedTask] }
+            : list
+        )
+      );
+    } catch (error) {
+      if (error.response) {
+        console.error("Erro de validação da API:", error.response.data);
+        alert(`Erro ao adicionar tarefa: ${JSON.stringify(error.response.data)}`);
+      } else {
+        console.error("Erro desconhecido:", error);
+        alert("Erro ao adicionar a tarefa, tente novamente mais tarde!");
+      }
+    }
   };
 
-  // Conteúdo principal do workspace
+
+  const handleDeleteList = async (listId) => {
+    try {
+      await api.delete(`api/workspace-todo/${listId}`)
+      setLists(lists.filter((list) => list.id !== listId))
+      if (activeList === listId) {
+        setActiveList(null)
+      }
+    } catch (error) {
+      console.error("Erro ao deletar lista:", error)
+      alert("Erro ao deletar a lista. Tente novamente mais tarde!")
+    }
+  };
+
+  const handleDeleteTask = async (listId, taskId) => {
+    try {
+      await api.delete(`api/tasks-todo/${taskId}`)
+      setLists(
+        lists.map((list) =>
+          list.id === listId
+            ? {
+              ...list,
+              tasks: list.tasks.filter((task) => task.id !== taskId),
+            }
+            : list
+        )
+      )
+    } catch (error) {
+      console.error("Erro ao deletar tarefa:", error)
+      alert("Erro ao deletar tarefa. Tente novamente mais tarde!")
+    }
+  };
+
   const workspaceContent = (
     <div className="flex flex-col h-full">
-        <Header />
+      <Header />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-white">Minhas Listas</h1>
-        <Link 
-          to="/dashboard" 
+        <Link
+          to="/dashboard"
           className="px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-700"
         >
           Voltar para Dashboard
@@ -81,17 +128,16 @@ export default function WorkspaceToDo() {
             </div>
             <div className="space-y-2">
               {lists.map((list) => (
-                <div 
+                <div
                   key={list.id}
-                  className={`p-4 rounded-lg cursor-pointer border ${
-                    activeList === list.id ? "bg-stone-800 border-[#90E528]" : "bg-stone-800 border-stone-700"
-                  }`}
+                  className={`p-4 rounded-lg cursor-pointer border ${activeList === list.id ? "bg-stone-800 border-[#90E528]" : "bg-stone-800 border-stone-700"
+                    }`}
                   onClick={() => setActiveList(list.id)}
                 >
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-white">{list.name}</h3>
                     <span className="text-sm text-gray-400">
-                      {list.tasks.length} tarefas
+                      {(list.tasks?.length) ?? 0} tarefas
                     </span>
                   </div>
                   <div className="flex gap-2 mt-2">
@@ -100,7 +146,7 @@ export default function WorkspaceToDo() {
                         {list.category}
                       </span>
                     )}
-                    <button 
+                    <button
                       className="text-red-500 hover:text-red-400"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -114,11 +160,11 @@ export default function WorkspaceToDo() {
               ))}
             </div>
           </div>
-          
+
           <div className="w-2/3 bg-stone-800 rounded-lg p-6">
             {activeList !== null ? (
-              <ToDoList 
-                list={lists.find(list => list.id === activeList)} 
+              <ToDoList
+                list={lists.find(list => list.id === activeList)}
                 onAddTask={handleAddTask}
                 onDeleteTask={handleDeleteTask}
               />

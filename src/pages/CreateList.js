@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoIosAddCircleOutline, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { IoCloseCircleOutline } from "react-icons/io5";
 
-export default function CreateList({ onCreateList }) {
+export default function CreateList({ list, onCreateList }) {
   const [isCreating, setIsCreating] = useState(false);
   const [listName, setListName] = useState("");
   const [category, setCategory] = useState("");
@@ -13,10 +13,8 @@ export default function CreateList({ onCreateList }) {
     e.preventDefault();
     if (listName.trim()) {
       onCreateList({
-        id: Date.now().toString(),
         name: listName,
-        category: category,
-        createdAt: new Date(),
+        category: category
       });
       setListName("");
       setCategory("");

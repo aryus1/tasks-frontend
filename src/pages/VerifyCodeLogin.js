@@ -55,7 +55,10 @@ export default function VerifyCodeLogin() {
         code: code,
       });
 
-      if (response.data.token) {
+      const token = response.data.token;
+
+      if (token) {
+        localStorage.setItem("token", token);
         setIsCodeValid(true);
         localStorage.removeItem("email");
         navigate("/dashboard");

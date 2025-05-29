@@ -12,17 +12,14 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
   const handleAddTask = () => {
     if (taskName.trim()) {
       onAddTask(list.id, {
-        id: Date.now().toString(),
-        name: taskName,
-        priority,
-        completed: false,
-        createdAt: new Date(),
-      });
+        title: taskName,
+      })
       setTaskName("");
       setPriority("normal");
       setIsAdding(false);
     }
   };
+
 
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -58,14 +55,14 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-xl font-bold text-white">{list.name}</h2>
+          <h2 className="text-xl font-bold text-white">{list.title}</h2>
           {list.category && (
             <span className="bg-lime-300/50 text-lime-950 px-3 py-1 text-xs rounded-xl inline-block mt-1">
               {list.category}
             </span>
           )}
         </div>
-        
+
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
@@ -96,14 +93,13 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
             <label className="block text-sm text-gray-400 mb-1">Prioridade</label>
             <div className="grid grid-cols-4 gap-2">
               {["low", "normal", "high", "urgent"].map((option) => (
-                <div 
+                <div
                   key={option}
                   onClick={() => setPriority(option)}
-                  className={`px-3 py-2 rounded-lg cursor-pointer text-center transition-all ${
-                    priority === option 
-                      ? `${getPriorityColor(option)} font-medium` 
+                  className={`px-3 py-2 rounded-lg cursor-pointer text-center transition-all ${priority === option
+                      ? `${getPriorityColor(option)} font-medium`
                       : "bg-stone-600 text-gray-300 hover:bg-stone-500"
-                  }`}
+                    }`}
                 >
                   {getPriorityLabel(option)}
                 </div>
@@ -134,12 +130,12 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
         {list.tasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-gray-400">Você ainda não tem tarefas nesta lista</p>
-            
+
           </div>
         ) : (
           <div className="space-y-2">
             {list.tasks.map((task) => (
-              <div 
+              <div
                 key={task.id}
                 className="flex items-center justify-between p-4 bg-stone-900 rounded-lg"
               >
@@ -153,7 +149,7 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
                     className="h-5 w-5 rounded border-gray-500 text-[#90E528] focus:ring-[#90E528]"
                   />
                   <span className={`${task.completed ? "line-through text-gray-400" : "text-white"}`}>
-                    {task.name}
+                    {task.title}
                   </span>
                   <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(task.priority)}`}>
                     {getPriorityLabel(task.priority)}
