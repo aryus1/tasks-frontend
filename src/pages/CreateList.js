@@ -14,7 +14,7 @@ export default function CreateList({ list, onCreateList }) {
     if (listName.trim()) {
       onCreateList({
         name: listName,
-        category: category
+        category: category,
       });
       setListName("");
       setCategory("");

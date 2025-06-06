@@ -13,16 +13,35 @@ export default function WorkspaceToDo() {
 
   const fetchLists = async () => {
     try {
-      const response = await api.get('api/workspace-todo')
-      const fetchedLists = response.data.map((list) => ({
-        ...list,
-        tasks: list.tasks ?? [],
-      }));
-      setLists(fetchedLists)
+      const [workspacesRes, flowsRes] = await Promise.all([
+        api.get('api/workspace-todo'),
+        api.get('api/flow-todo'),
+      ]);
+      const flows = flowsRes.data;
+
+      // Para cada flow, busque as tarefas
+      const listsWithTasks = await Promise.all(
+        workspacesRes.data.map(async (list) => {
+          const flow = flows.find(f => f.workspace_id === list.id);
+          let tasks = [];
+          if (flow) {
+            // Supondo que você tenha esse endpoint:
+            const tasksRes = await api.get(`api/tasks-todo?flow_id=${flow.id}`);
+            tasks = tasksRes.data;
+          }
+          return {
+            ...list,
+            tasks,
+            flow_id: flow ? flow.id : null,
+          };
+        })
+      );
+
+      setLists(listsWithTasks);
     } catch (error) {
-      console.error("Erro ao buscar as listas", error)
+      console.error("Erro ao buscar as listas", error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchLists()
@@ -30,30 +49,29 @@ export default function WorkspaceToDo() {
 
   const handleCreateList = async (newList) => {
     try {
-      const response = await api.post("api/workspace-todo", newList)
-      const createdList = { ...response.data, tasks: [] }
-      setLists([...lists, createdList])
+      const workspaceRes = await api.post("api/workspace-todo", newList);
+      const workspace = workspaceRes.data;
+      // Cria o flow relacionado
+      const flowRes = await api.post("api/flow-todo", {
+        workspace_id: workspace.id,
+        title: workspace.name
+      });
+      const flow = flowRes.data;
+      const createdList = { ...workspace, tasks: [], flow_id: flow.id };
+      setLists([...lists, createdList]);
     } catch (error) {
-      console.error("Erro ao criar a lista To-Do", error)
-      alert("Erro ao criar a lista. Tente novamente mais tarde!")
+      console.error("Erro ao criar a lista To-Do", error);
+      alert("Erro ao criar a lista. Tente novamente mais tarde!");
     }
   };
 
-  const handleAddTask = async (listId, newTask) => {
+  const handleAddTask = async (list, newTask) => {
     try {
-      const response = await api.post('api/tasks-todo', {
+      await api.post('api/tasks-todo', {
         ...newTask,
-        flow_id: listId
+        flow_id: list.flow_id
       });
-      const savedTask = response.data;
-
-      setLists(
-        lists.map((list) =>
-          list.id === listId
-            ? { ...list, tasks: [...list.tasks, savedTask] }
-            : list
-        )
-      );
+      await fetchLists(); // <-- Atualiza as listas e tarefas do backend
     } catch (error) {
       if (error.response) {
         console.error("Erro de validação da API:", error.response.data);

@@ -4,18 +4,28 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 
 export default function ToDoList({ list, onAddTask, onDeleteTask }) {
   const [taskName, setTaskName] = useState("");
-  const [priority, setPriority] = useState("normal");
+  const [priority, setPriority] = useState("media");
   const [isAdding, setIsAdding] = useState(false);
 
   if (!list) return null;
 
   const handleAddTask = () => {
     if (taskName.trim()) {
-      onAddTask(list.id, {
+      console.log("Enviando tarefa:", {
         title: taskName,
-      })
+        priority,
+        flow_id: list.flow_id
+      });
+      onAddTask(list, {
+        title: taskName,
+        priority: priority, // valor padrão aceito pelo backend
+        description: "",
+        due_date: null,
+        repeat_interval: "none",
+        type: "todo",
+      });
       setTaskName("");
-      setPriority("normal");
+      setPriority("media");
       setIsAdding(false);
     }
   };
@@ -23,14 +33,12 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "low":
+      case "baixa":
         return "bg-blue-100 text-blue-800";
-      case "normal":
+      case "media":
         return "bg-gray-100 text-gray-800";
-      case "high":
+      case "alta":
         return "bg-orange-100 text-orange-800";
-      case "urgent":
-        return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -38,14 +46,12 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
 
   const getPriorityLabel = (priority) => {
     switch (priority) {
-      case "low":
+      case "baixa":
         return "Baixa";
-      case "normal":
+      case "media":
         return "Normal";
-      case "high":
+      case "alta":
         return "Alta";
-      case "urgent":
-        return "Urgente";
       default:
         return "Normal";
     }
@@ -92,13 +98,13 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
           <div className="mb-4">
             <label className="block text-sm text-gray-400 mb-1">Prioridade</label>
             <div className="grid grid-cols-4 gap-2">
-              {["low", "normal", "high", "urgent"].map((option) => (
+              {["baixa", "media", "alta"].map((option) => (
                 <div
                   key={option}
                   onClick={() => setPriority(option)}
                   className={`px-3 py-2 rounded-lg cursor-pointer text-center transition-all ${priority === option
-                      ? `${getPriorityColor(option)} font-medium`
-                      : "bg-stone-600 text-gray-300 hover:bg-stone-500"
+                    ? `${getPriorityColor(option)} font-medium`
+                    : "bg-stone-600 text-gray-300 hover:bg-stone-500"
                     }`}
                 >
                   {getPriorityLabel(option)}
@@ -144,7 +150,7 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
                     type="checkbox"
                     checked={task.completed}
                     onChange={() => {
-                      onAddTask(list.id, { ...task, completed: !task.completed });
+                      onAddTask(list, { ...task, completed: !task.completed });
                     }}
                     className="h-5 w-5 rounded border-gray-500 text-[#90E528] focus:ring-[#90E528]"
                   />
