@@ -1,12 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosList } from "react-icons/io";
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import Header from "./Header";
 import Lists from "./Lists";
+import api from "../services/axios";
 
 export default function Dashboard() {
-    const [activeWorkspace, setActiveWorkspace] = useState("todo"); // "todo" ou "kanban"
+    const [activeWorkspace, setActiveWorkspace] = useState("todo");
+    const [countWorkspaces, setCountWorkspaces] = useState(0);
+    const [pendingTasks, setPendingTasks] = useState(0);
+    const [doneTasks, setDoneTasks] = useState(0);
+
+    const fetchFlow = async () => {
+        try {
+            const response = await api.get("api/flow-todo")
+            setCountWorkspaces(response.data.length);
+        } catch (error) {
+            console.error("Erro ao buscar quantidade de listas:", error);
+        }
+    }
+
+    const fetchPendingTasks = async () => {
+        try {
+            const response = await api.get("api/tasks-todo")
+            const pendentes = response.data.filter(task => !task.completed);
+            setPendingTasks(pendentes.length);
+        } catch (error) {
+            console.error("Erro ao buscar tarefas pendentes:", error);
+        }
+    }
+
+    const fetchDoneTasks = async () => {
+        try {
+            const response = await api.get("api/tasks-todo")
+            const concluidas = response.data.filter(task => task.completed);
+            setDoneTasks(concluidas.length);
+        } catch (error) {
+            console.error("Erro ao buscar tarefas concluídas:", error);
+        }
+    }
+ 
+    useEffect(() => {
+        fetchFlow();
+        fetchPendingTasks();
+        fetchDoneTasks();
+    }, [])
 
     return (
         <div className="h-screen flex flex-col">
@@ -70,15 +109,15 @@ export default function Dashboard() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="bg-stone-700 rounded-lg p-4">
                                     <h3 className="text-sm text-gray-400 mb-1">Total de Listas</h3>
-                                    <p className="text-2xl font-bold text-white">2</p>
+                                    <p className="text-2xl font-bold text-white">{countWorkspaces}</p>
                                 </div>
                                 <div className="bg-stone-700 rounded-lg p-4">
                                     <h3 className="text-sm text-gray-400 mb-1">Tarefas Pendentes</h3>
-                                    <p className="text-2xl font-bold text-white">5</p>
+                                    <p className="text-2xl font-bold text-white">{pendingTasks}</p>
                                 </div>
                                 <div className="bg-stone-700 rounded-lg p-4">
                                     <h3 className="text-sm text-gray-400 mb-1">Tarefas Concluídas</h3>
-                                    <p className="text-2xl font-bold text-white">8</p>
+                                    <p className="text-2xl font-bold text-white">{doneTasks}</p>
                                 </div>
                             </div>
                         </div>

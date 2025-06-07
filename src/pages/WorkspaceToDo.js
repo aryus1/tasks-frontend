@@ -116,6 +116,16 @@ export default function WorkspaceToDo() {
     }
   };
 
+  const handleUpdateTask = async (list, updatedTask) => {
+    try {
+      await api.put(`api/tasks-todo/${updatedTask.id}`, updatedTask);
+      await fetchLists();
+    } catch (error) {
+      alert("Erro ao atualizar a tarefa.");
+      console.error(error);
+    }
+  };
+
   const workspaceContent = (
     <div className="flex flex-col h-full">
       <Header />
@@ -185,6 +195,7 @@ export default function WorkspaceToDo() {
                 list={lists.find(list => list.id === activeList)}
                 onAddTask={handleAddTask}
                 onDeleteTask={handleDeleteTask}
+                onUpdateTask={handleUpdateTask}
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full">

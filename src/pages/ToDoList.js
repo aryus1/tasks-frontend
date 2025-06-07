@@ -2,7 +2,7 @@ import { useState } from "react";
 import { GoTrash } from "react-icons/go";
 import { IoIosAddCircleOutline } from "react-icons/io";
 
-export default function ToDoList({ list, onAddTask, onDeleteTask }) {
+export default function ToDoList({ list, onAddTask, onDeleteTask, onUpdateTask }) {
   const [taskName, setTaskName] = useState("");
   const [priority, setPriority] = useState("media");
   const [isAdding, setIsAdding] = useState(false);
@@ -23,6 +23,7 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
         due_date: null,
         repeat_interval: "none",
         type: "todo",
+        completed: false,
       });
       setTaskName("");
       setPriority("media");
@@ -150,7 +151,15 @@ export default function ToDoList({ list, onAddTask, onDeleteTask }) {
                     type="checkbox"
                     checked={task.completed}
                     onChange={() => {
-                      onAddTask(list, { ...task, completed: !task.completed });
+                      onUpdateTask(list, {
+                        id: task.id,
+                        title: task.title,
+                        description: task.description,
+                        priority: task.priority,
+                        due_date: task.due_date,
+                        repeat_interval: task.repeat_interval,
+                        completed: !task.completed,
+                      });
                     }}
                     className="h-5 w-5 rounded border-gray-500 text-[#90E528] focus:ring-[#90E528]"
                   />
