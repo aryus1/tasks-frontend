@@ -1,15 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { IoIosList } from "react-icons/io";
-import { MdOutlineSpaceDashboard, MdOutlineViewKanban } from "react-icons/md";
 import { AiOutlineHome } from "react-icons/ai";
 
 export default function Lists() {
   const location = useLocation();
   
-  // Determina qual aba está ativa com base na URL atual
   const isActiveDashboard = location.pathname === "/dashboard";
   const isActiveToDo = location.pathname === "/workspace-to-do";
-  const isActiveKanBan = location.pathname === "/kanban";
 
   const navigationItems = [
     {
@@ -29,10 +26,9 @@ export default function Lists() {
   ];
   
   return (
-    <div className="flex flex-col py-4 h-full overflow-hidden">
-      {/* Seção de Navegação */}
-      <div className="mb-6 flex-shrink-0">
-        
+    <div className="flex flex-col py-2 h-full overflow-hidden">
+      {/* Navegação */}
+      <div className="flex-shrink-0">
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
@@ -58,7 +54,6 @@ export default function Lists() {
                   }`}>
                     {item.label}
                   </span>
-                  {/* Descrição visível apenas em telas grandes e quando não ativo */}
                   <span className={`text-xs truncate transition-opacity hidden lg:block ${
                     item.isActive 
                       ? "text-lime-100 opacity-90" 
@@ -67,8 +62,7 @@ export default function Lists() {
                     {item.description}
                   </span>
                 </div>
-                
-                {/* Indicador visual para item ativo */}
+
                 {item.isActive && (
                   <div className="w-2 h-2 bg-white rounded-full flex-shrink-0 animate-pulse"></div>
                 )}
@@ -80,13 +74,14 @@ export default function Lists() {
 
       <div className="mb-6 flex-shrink-0 hidden lg:block">
         <div className="space-y-2">
+          {/* Seções extras futuras */}
         </div>
       </div>
       
-      <div className="mt-auto flex-shrink-0">
+      {/* Dica de produtividade visível apenas em telas grandes */}
+      <div className="mt-auto flex-shrink-0 hidden lg:block">
         <div className="bg-gradient-to-br from-stone-800/40 to-stone-800/20 rounded-lg p-4 border border-stone-700/50 backdrop-blur-sm">
           <div className="flex items-start gap-3">
-            {/* Ícone de dica */}
             <div className="w-8 h-8 bg-lime-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
               <svg 
                 className="w-4 h-4 text-lime-400" 

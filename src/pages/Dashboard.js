@@ -51,7 +51,7 @@ export default function Dashboard() {
         <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-col lg:flex-row pt-16 flex-grow">
-                <aside className="px-4 py-4 flex flex-col gap-4 bg-stone-950 border-b lg:border-b-0 lg:border-r border-stone-800 w-full lg:w-72">
+                <aside className="px-4 py-2 flex flex-col gap-4 bg-stone-900 lg:border-b-0 lg:border-r border-stone-800 w-full lg:w-72">
                     <Lists />
                 </aside>
                 <main className="px-6 pt-2 flex-1 flex flex-col bg-stone-900">

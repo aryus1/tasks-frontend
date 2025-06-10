@@ -194,7 +194,7 @@ export default function WorkspaceToDo() {
       <div className="h-screen flex flex-col">
         <Header />
         <div className="flex flex-1">
-          <aside className="hidden lg:block px-4 pt-20 flex flex-col gap-4 bg-stone-950 border-r border-stone-800 w-72">
+          <aside className="hidden lg:block px-4 pt-20 flex flex-col gap-4 bg-stone-800 border-r border-stone-800 w-72">
             <Lists />
           </aside>
           <main className="px-4 lg:px-6 pt-20 flex flex-col w-full bg-stone-900">
