@@ -77,32 +77,10 @@ export default function Dashboard() {
                                 >
                                     Acessar Listas
                                 </Link>
-                                <div className="mt-4">
-                                    <span className="text-sm text-gray-400">Listas recentes: 2</span>
-                                </div>
+                                
                             </div>
 
-                            <div className="bg-stone-800 rounded-lg p-6 border border-stone-700">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                                        <MdOutlineSpaceDashboard className="text-xl text-gray-400" />
-                                    </div>
-                                    <h2 className="text-xl font-bold text-white">Quadros Kanban</h2>
-                                </div>
-                                <p className="text-gray-400 mb-6">
-                                    Visualize o fluxo das suas tarefas com quadros Kanban personalizáveis e arraste tarefas entre colunas.
-                                </p>
-                                <button
-                                    className="inline-block px-4 py-2 bg-stone-700 text-gray-300 font-medium rounded-lg cursor-not-allowed"
-                                    disabled
-                                >
-                                    Em breve
-                                </button>
-                                <div className="mt-4">
-                                    <span className="text-sm text-gray-400">Disponível na próxima versão</span>
-                                </div>
-                            </div>
-                        </div>
+                            
 
                         <div className="bg-stone-800 rounded-lg p-6 border border-stone-700">
                             <h2 className="text-xl font-bold text-white mb-4">Estatísticas</h2>
@@ -122,6 +100,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
                 </main>
             </div>
         </div>

@@ -26,13 +26,6 @@ export default function Lists() {
       isActive: isActiveToDo,
       description: "Listas de tarefas organizadas"
     },
-    {
-      to: "/kanban",
-      icon: MdOutlineViewKanban,
-      label: "Kanban",
-      isActive: isActiveKanBan,
-      description: "Quadro visual de tarefas"
-    }
   ];
   
   return (
