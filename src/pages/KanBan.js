@@ -124,11 +124,14 @@ export default function KanBan() {
   };
 
   return (
+    
     <div className="bg-stone-900 min-h-screen p-6">
       <h1 className="text-3xl font-bold text-white mb-8">Meu Kanban</h1>
       <div className="mb-8">
         <CreateList onCreateList={handleCreateList} />
       </div>
+
+
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-4 overflow-x-auto">

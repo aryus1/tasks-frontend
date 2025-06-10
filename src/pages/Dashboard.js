@@ -40,7 +40,7 @@ export default function Dashboard() {
             console.error("Erro ao buscar tarefas concluídas:", error);
         }
     }
- 
+
     useEffect(() => {
         fetchFlow();
         fetchPendingTasks();
@@ -48,18 +48,18 @@ export default function Dashboard() {
     }, [])
 
     return (
-        <div className="h-screen flex flex-col">
-            <div className="flex flex-1 pt-16">
+        <div className="flex flex-col min-h-screen">
             <Header />
-                <aside className="px-4 flex flex-col gap-4 bg-stone-950 border-r border-stone-800 w-72">
+            <div className="flex flex-col lg:flex-row pt-16 flex-grow">
+                <aside className="px-4 py-4 flex flex-col gap-4 bg-stone-950 border-b lg:border-b-0 lg:border-r border-stone-800 w-full lg:w-72">
                     <Lists />
                 </aside>
-                <main className="px-6 pt-2 flex flex-col w-full bg-stone-900">
+                <main className="px-6 pt-2 flex-1 flex flex-col bg-stone-900">
                     <div className="flex flex-col h-full">
                         <div className="flex justify-between items-center mb-6">
                             <h1 className="text-2xl font-bold text-white">Dashboard</h1>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                             <div className="bg-stone-800 rounded-lg p-6 border border-stone-700">
                                 <div className="flex items-center gap-3 mb-4">
@@ -81,7 +81,7 @@ export default function Dashboard() {
                                     <span className="text-sm text-gray-400">Listas recentes: 2</span>
                                 </div>
                             </div>
-                            
+
                             <div className="bg-stone-800 rounded-lg p-6 border border-stone-700">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
@@ -103,7 +103,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="bg-stone-800 rounded-lg p-6 border border-stone-700">
                             <h2 className="text-xl font-bold text-white mb-4">Estatísticas</h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -127,3 +127,4 @@ export default function Dashboard() {
         </div>
     );
 }
+
